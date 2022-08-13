@@ -11,6 +11,7 @@ double ordinate[100] = { 0 };
 double abscissaPolygon[100] = { 0 };
 double ordinatePolygon[100] = { 0 };
 int counter = 0;
+int indexFirst = 0;
 
 double newNum(void);
 void printArray(double[]);
@@ -44,12 +45,14 @@ int main()
     printArray(ordinate);
 
     //нашли самую нижнюю точку
-    int indexFirst = findLower(abscissa, ordinate);
+    indexFirst = findLower(abscissa, ordinate);
     printf("\n\n%d,first point. abscissa = %.1f, ordinate = %.1f\n", indexFirst, abscissa[indexFirst], ordinate[indexFirst]);
     //добавили во множество вершин многоугольника
     abscissaPolygon[0] = abscissa[indexFirst];
     ordinatePolygon[0] = ordinate[indexFirst];
     counter++;
+
+ 
 
     //поиск второй точки
     double cos = -1;
@@ -64,14 +67,25 @@ int main()
             indexSecond = i;
         }
     }
+    
+
     add(indexSecond);
     printf("%d abscissa = %.1f, ordinate = %.1f\n", indexSecond, abscissa[indexSecond], ordinate[indexSecond]);
+    //зануляем точку
+    abscissa[indexSecond] = 0;
+    ordinate[indexSecond] = 0;
+
     int next;
     do {
         next = findNext();
         add(next);
 
+        abscissa[next] = 0;
+        ordinate[next] = 0;
+
     } while (next != indexFirst);
+
+
     printArray(abscissaPolygon);
     printf("\n\n");
     printArray(ordinatePolygon);
@@ -89,18 +103,14 @@ int main()
 
 int findNext() {
     double cos = -1;
-    double x_vector1 = abscissa[counter - 1] - abscissa[counter - 2];
-    double y_vector1 = ordinate[counter -1] - ordinate[counter - 2];
-    double x_vector2, y_vector2;
     int indexNext = 0;
 
     for (int i = 0; i < AMOUNT; i++) {
-        if (abscissa[i] == abscissa[counter] && ordinate[i] == ordinate[counter]) {
+        if (abscissa[i] == 0 && ordinate[i] == 0 || indexFirst == i) {
             continue;
         }
-        double x_vector2 = abscissa[i] - abscissa[counter - 1];
-        double y_vector2 = ordinate[i] - ordinate[counter -1];
-        double tmp = (x_vector1 * x_vector2 + y_vector1 * y_vector2) / (sqrt((pow(x_vector1, 2) + pow(y_vector1, 2))) * sqrt((pow(x_vector2, 2) + pow(y_vector2, 2))));
+        
+        double tmp = abscissa[i] / sqrt(pow(abscissa[i], 2) + pow(ordinate[i], 2));
         if (tmp > cos) {
             cos = tmp;
             indexNext = i;
