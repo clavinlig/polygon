@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include < math.h >
+#pragma warning(disable:4996)
 
 int AMOUNT = 100;
 double abscissa[100] = { 0 };
@@ -19,12 +20,25 @@ int findNext(void);
 
 int main()
 {
+    /*int main() {
+        
+        
+    }
+    */
+
     srand(time(NULL));
     for (int i = 0; i < AMOUNT; i++) {
         abscissa[i] = newNum();
         ordinate[i] = newNum();
     }
-    
+    FILE* file = fopen("allPoints.csv", "w");
+    fprintf(file, "x, y\n");
+    for (int i = 0; i < AMOUNT; i++) {
+        fprintf(file, "%.2f, %.2f\n", abscissa[i], ordinate[i]);
+    }
+    fclose(file);
+
+
     printArray(abscissa);
     printf("\n\n");
     printArray(ordinate);
@@ -52,11 +66,25 @@ int main()
     }
     add(indexSecond);
     printf("%d abscissa = %.1f, ordinate = %.1f\n", indexSecond, abscissa[indexSecond], ordinate[indexSecond]);
-
+    int next;
     do {
-        
+        next = findNext();
+        add(next);
 
-    } while (abscissa[counter]) != ;
+    } while (next != indexFirst);
+    printArray(abscissaPolygon);
+    printf("\n\n");
+    printArray(ordinatePolygon);
+
+    FILE* file1 = fopen("polygon.csv", "w");
+    fprintf(file1, "x, y\n");
+    for (int i = 0; i < AMOUNT; i++) {
+        if (abscissaPolygon[i] == 0 && ordinatePolygon[i]) {
+            break;
+        }
+        fprintf(file1, "%.2f, %.2f\n", abscissaPolygon[i], ordinatePolygon[i]);
+    }
+    fclose(file1);
 }
 
 int findNext() {
