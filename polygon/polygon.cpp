@@ -110,7 +110,7 @@ int findNext() {
             continue;
         }
         
-        double tmp = abscissa[i] / sqrt(pow(abscissa[i], 2) + pow(ordinate[i], 2));
+        double tmp = (abscissa[i] - abscissaPolygon[counter - 1])/ sqrt(pow(abscissa[i] - abscissaPolygon[counter - 1], 2) + pow(ordinate[i] -ordinatePolygon[counter - 1], 2));
         if (tmp > cos) {
             cos = tmp;
             indexNext = i;
