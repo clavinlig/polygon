@@ -4,12 +4,12 @@
 #include < math.h >
 #pragma warning(disable:4996)
 
-int AMOUNT = 100;
-double abscissa[100] = { 0 };
-double ordinate[100] = { 0 };
+int AMOUNT = 500;
+double abscissa[500] = { 0 };
+double ordinate[500] = { 0 };
 
-double abscissaPolygon[100] = { 0 };
-double ordinatePolygon[100] = { 0 };
+double abscissaPolygon[1000] = { 0 };
+double ordinatePolygon[1000] = { 0 };
 int counter = 0;
 int indexFirst = 0;
 
@@ -18,15 +18,10 @@ void printArray(double[]);
 int findLower(double[], double[]);
 void add(int);
 int findNext(void);
+double module(double, double);
 
 int main()
 {
-    /*int main() {
-        
-        
-    }
-    */
-
     srand(time(NULL));
     for (int i = 0; i < AMOUNT; i++) {
         abscissa[i] = newNum();
@@ -39,7 +34,6 @@ int main()
     }
     fclose(file);
 
-
     printArray(abscissa);
     printf("\n\n");
     printArray(ordinate);
@@ -50,10 +44,7 @@ int main()
     //добавили во множество вершин многоугольника
     abscissaPolygon[0] = abscissa[indexFirst];
     ordinatePolygon[0] = ordinate[indexFirst];
-    counter++;
-
- 
-
+    
     //поиск второй точки
     double cos = -1;
     int indexSecond = 0;
@@ -61,30 +52,22 @@ int main()
         if (i == indexFirst) {
             continue;
         }
-        double tmp = abscissa[i] / sqrt(pow(abscissa[i], 2) + pow(ordinate[i], 2));
+        double tmp = (abscissa[i] -abscissaPolygon[0]) / sqrt(pow(abscissa[i] -abscissaPolygon[0], 2) + pow(ordinate[i]- ordinatePolygon[0], 2));
         if (tmp > cos) {
             cos = tmp;
             indexSecond = i;
         }
     }
     
-
     add(indexSecond);
     printf("%d abscissa = %.1f, ordinate = %.1f\n", indexSecond, abscissa[indexSecond], ordinate[indexSecond]);
-    //зануляем точку
-    abscissa[indexSecond] = 0;
-    ordinate[indexSecond] = 0;
-
+    printf("%d\n", counter);
+    
     int next;
     do {
         next = findNext();
         add(next);
-
-        abscissa[next] = 0;
-        ordinate[next] = 0;
-
     } while (next != indexFirst);
-
 
     printArray(abscissaPolygon);
     printf("\n\n");
@@ -93,24 +76,28 @@ int main()
     FILE* file1 = fopen("polygon.csv", "w");
     fprintf(file1, "x, y\n");
     for (int i = 0; i < AMOUNT; i++) {
-        if (abscissaPolygon[i] == 0 && ordinatePolygon[i]) {
+        if (abscissaPolygon[i] == 0 && ordinatePolygon[i] ==0) {
             break;
         }
         fprintf(file1, "%.2f, %.2f\n", abscissaPolygon[i], ordinatePolygon[i]);
     }
+    fprintf(file1, "%.2f, %.2f\n", abscissaPolygon[0], ordinatePolygon[0]);
     fclose(file1);
 }
 
 int findNext() {
     double cos = -1;
+    double x_vector1 = abscissaPolygon[counter] - abscissaPolygon[counter - 1];
+    double y_vector1 = ordinatePolygon[counter] - ordinatePolygon[counter - 1];
+    double x_vector2, y_vector2;
     int indexNext = 0;
-
     for (int i = 0; i < AMOUNT; i++) {
-        if (abscissa[i] == 0 && ordinate[i] == 0 || indexFirst == i) {
+        if (abscissa[i] == abscissaPolygon[counter] && ordinate[i] == ordinatePolygon[counter]) {
             continue;
         }
-        
-        double tmp = (abscissa[i] - abscissaPolygon[counter - 1])/ sqrt(pow(abscissa[i] - abscissaPolygon[counter - 1], 2) + pow(ordinate[i] -ordinatePolygon[counter - 1], 2));
+        x_vector2 = abscissa[i] - abscissaPolygon[counter];
+        y_vector2 = ordinate[i] - ordinatePolygon[counter];
+        double tmp = (x_vector1 * x_vector2 + y_vector1 * y_vector2) / (module(x_vector1, y_vector1) * module(x_vector2, y_vector2));
         if (tmp > cos) {
             cos = tmp;
             indexNext = i;
@@ -119,11 +106,14 @@ int findNext() {
     return indexNext;
 }
 
+double module(double x, double y) {
+    return sqrt(x * x + y * y);
+}
+
 void add(int index) {
+    counter++;
     abscissaPolygon[counter] = abscissa[index];
     ordinatePolygon[counter] = ordinate[index];
-    counter++;
-
 }
 
 int findLower(double x[], double y[]) {
@@ -142,7 +132,6 @@ int findLower(double x[], double y[]) {
 }
 
 double newNum() {
-    //
     double r = (double)(rand() % 10) / (double) 10 + (double)(rand() % 10);
     return r;
 }
@@ -150,7 +139,6 @@ double newNum() {
 void printArray(double a[]) {
     for (int i = 0; i < AMOUNT; i++) {
         printf(" %.3f", a[i]);
-
     }
 }
 
